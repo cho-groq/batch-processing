@@ -1,3 +1,7 @@
+"""
+Step 1. Set up dependencies
+"""
+
 import os
 from dotenv import load_dotenv
 import requests # pip install requests first!
@@ -8,11 +12,10 @@ load_dotenv()
 
 # Access environment variables
 api_key = os.getenv("GROQ_API_KEY")
-print(api_key)
 
 
 """
-1. Upload the JSONL file to Groq
+Step 2. Upload the JSONL file to Groq
 """
 
 def upload_file_to_groq(api_key, file_path):
@@ -37,22 +40,21 @@ def upload_file_to_groq(api_key, file_path):
     return response.json()
 
 # Usage example
-file_path = "batch.jsonl"  # Path to your JSONL file
-# need to replace with a correct id. get an id from the above function probably thing["id"] or thing.id prolly using the first id index
-file_id = "" # replace with your `id` from file upload API response object (used in the next step)
+file_path = "batch_input.jsonl"  # Path to your JSONL file
+file_id = "" # will be used in the next step
 
 try:
     result = upload_file_to_groq(api_key, file_path)
-    print(result)
-
     file_id = result["id"]
-    print("this is the file id: " + file_id)
+    print("This is the file_id from Step 2: " + file_id)
+
 except Exception as e:
     print(f"Error: {e}")
 
 
+
 """
-2. Now we make a batch object
+Step 3. Make a batch object
 """
 
 def create_batch(api_key, input_file_id):
@@ -72,18 +74,19 @@ def create_batch(api_key, input_file_id):
     response = requests.post(url, headers=headers, json=data)
     return response.json()
 
-batch_id = ""
+batch_id = "" # will be used in the next step
 try:
     result = create_batch(api_key, file_id)
-    print("\n step 2 result")
-    print(result)
     batch_id = result["id"] # batch result id
+    print("This is the Batch object id from Step 3: " + batch_id)
+
 except Exception as e:
     print(f"Error: {e}")
 
 
+
 """
-3. Get batch status
+Step 4. Get the batch status
 """
 
 def get_batch_status(api_key, batch_id):
@@ -97,14 +100,10 @@ def get_batch_status(api_key, batch_id):
     response = requests.get(url, headers=headers)
     return response.json()
 
-
-
-output_file_id = ""
+output_file_id = "" # will be used in the next step
 try:
     result = get_batch_status(api_key, batch_id)
-    print("\n step4 results: ")
-    print(result)
-
+    print("\nStep 4 results: ")
     
     count = 0
 
@@ -112,18 +111,18 @@ try:
     while result["status"] != "completed" and count < 100:
         result = get_batch_status(api_key, batch_id)  # Update `result` inside the loop
         time.sleep(3)
-        print(result["status"])
+        print("Your batch status is: " + result["status"])
         count += 1
 
-    print(result["status"])
     output_file_id = result.get("output_file_id")  # Use .get() to safely access keys
-    print("this is outputfileid: " + output_file_id)
+    print("This is your output_file_id from Step 4: " + output_file_id)
 except Exception as e:
     print(f"Error: {e}")
 
 
+
 """
-4. Retrieve batch results
+Step 5. Retrieve batch results
 """
 
 def download_file_content(api_key, output_file_id, output_file):
@@ -139,10 +138,9 @@ def download_file_content(api_key, output_file_id, output_file):
     with open(output_file, 'wb') as f:
         f.write(response.content)
     
-    return f"File downloaded successfully to {output_file}"
+    return f"\nFile downloaded successfully to {output_file}"
 
 output_file = "batch_output.jsonl" # replace with your own file of choice to download batch job contents to
-print(output_file_id)
 try:
     result = download_file_content(api_key, output_file_id, output_file)
     print(result)
