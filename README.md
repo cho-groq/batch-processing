@@ -1,6 +1,15 @@
 # batch-processing
 
+https://github.com/user-attachments/assets/2dceeee6-fb68-4979-a409-9b5d6afde245
+
 ### Set up:
+
+Create a .jsonl file with your batch processing calls. Each line would be a new Groq batch processing call.
+
+Example input .jsonl file with one request:
+```
+{"custom_id": "request-2", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "llama-3.1-8b-instant", "messages": [{"role": "system", "content": "You are a helpful translation assistant. Translate the following into spanish."}, {"role": "user", "content": "Hello, how are you today?"}]}}
+```
 
 ### Create a virtual environment
 python3 -m venv venv
@@ -27,11 +36,6 @@ Your batch status is: completed
 This is your output_file_id from Step 4: file_01jpthh1e3e739wba761nfgvj2
 
 File downloaded successfully to batch_output.jsonl
-```
-
-Example input .jsonl file
-```
-{"custom_id": "request-2", "method": "POST", "url": "/v1/chat/completions", "body": {"model": "llama-3.1-8b-instant", "messages": [{"role": "system", "content": "You are a helpful translation assistant. Translate the following into spanish."}, {"role": "user", "content": "Hello, how are you today?"}]}}
 ```
 
 Example output .jsonl file
